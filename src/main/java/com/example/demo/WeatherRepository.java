@@ -3,32 +3,30 @@ package com.example.demo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.asm.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 @Repository
-public class GeoCodingRepository {
+public class WeatherRepository {
 
     private final String GeoCodingURL = "http://api.openweathermap.org/geo/1.0/direct?q=";
+    private final String WeatherURL = "https://api.openweathermap.org/data/3.0/onecall?lat=";
 
 
     private ObjectMapper objectMapper;
     private RestTemplate restTemplate;
 
     @Autowired
-    private GeoCodingRepository(RestTemplate restTemplate, ObjectMapper objectMapper){
+    private WeatherRepository(RestTemplate restTemplate, ObjectMapper objectMapper){
         this.restTemplate = restTemplate;
         this.objectMapper=objectMapper;
     }
 
 
-    public Map<String,Integer> findCoordinatesByCity(String City) {
+    private Map<String,Integer> findCoordinatesByCity(String City) {
         Optional<JsonNode> jsonNode = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(GeoCodingURL + City + "&limit=5&appid=fc020e00e72e06c98a1095659064252b", JsonNode[].class))).findFirst();
 
         Map<String, Integer> result = new HashMap<>();
@@ -45,6 +43,17 @@ public class GeoCodingRepository {
             throw new RuntimeException("null");
         }
     }
+
+
+    public Optional<WeatherEntity> getWeather(String City){
+        Map<String, Integer> coordinates = findCoordinatesByCity(City);
+        int lat = coordinates.get("lat");
+        int lon = coordinates.get("lon");
+
+        return Optional.ofNullable(restTemplate.getForObject(WeatherURL + lat + "&lon=" + lon +"&appid=fc020e00e72e06c98a1095659064252b", WeatherEntity.class));
+    }
+
+
 
 
 
