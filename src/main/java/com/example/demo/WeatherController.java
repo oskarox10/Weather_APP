@@ -25,11 +25,6 @@ public class WeatherController {
     }
 
 
-    @GetMapping("/coordinates/{city}")
-    public ResponseEntity<Coordinates> findCoordinates (@PathVariable("city") String city){
-        return geoCodingRepository.findCoordinatesByCity(city);
-    }
-
 
 
 
