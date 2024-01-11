@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class GeoCodingRepository {
@@ -28,23 +28,22 @@ public class GeoCodingRepository {
     }
 
 
-    public JsonNode findCoordinatesByCity(String City) throws IOException {
-        JsonNode json;
+    public Map<String,Integer> findCoordinatesByCity(String City) {
+        Optional<JsonNode> jsonNode = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(GeoCodingURL + City + "&limit=5&appid=fc020e00e72e06c98a1095659064252b", JsonNode[].class))).findFirst();
 
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(GeoCodingURL + City + "&limit=5&appid=fc020e00e72e06c98a1095659064252b");
-        json = objectMapper.readValue(inputStream, JsonNode.class);
+        Map<String, Integer> result = new HashMap<>();
 
-        JsonNode lat = getLat(json);
+        if (jsonNode.isPresent()){
+            int lat = jsonNode.get().get("lat").asInt();
+            int lon = jsonNode.get().get("lon").asInt();
+            result.put("lat", lat);
+            result.put("lon", lon);
 
-        return lat;
+            return result;
 
-    }
-
-    private JsonNode getLat(JsonNode json) {
-        return Optional.ofNullable(json)
-                .map(jsonNode -> jsonNode.get("lat"))
-                .orElseThrow(() -> new RuntimeException("Invalid Jon"));
-
+        }else {
+            throw new RuntimeException("null");
+        }
     }
 
 

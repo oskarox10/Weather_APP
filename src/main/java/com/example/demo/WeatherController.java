@@ -1,15 +1,15 @@
 package com.example.demo;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
+import java.util.Collection;
 
 @RestController
 @RequestMapping()
@@ -26,7 +26,7 @@ public class WeatherController {
 
 
     @GetMapping("/coordinates/{city}")
-    public JsonNode findCoordinates (@PathVariable("city") String city) throws IOException {
+    public ResponseEntity<Coordinates> findCoordinates (@PathVariable("city") String city){
         return geoCodingRepository.findCoordinatesByCity(city);
     }
 
