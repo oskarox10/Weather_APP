@@ -42,7 +42,7 @@ public class GeoCodingRepository {
 
     private JsonNode getLat(JsonNode json) {
         return Optional.ofNullable(json)
-                .map(jsonNode -> jsonNode.get("lon"))
+                .map(jsonNode -> jsonNode.get("lat"))
                 .orElseThrow(() -> new RuntimeException("Invalid Jon"));
 
     }
