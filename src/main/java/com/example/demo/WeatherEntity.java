@@ -4,14 +4,13 @@ package com.example.demo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.sun.tools.javac.Main;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
      "temp",
      "feels_like",
-     "pressure",
-     "clouds",
-     "visibility"
+     "pressure"
 })
 public class WeatherEntity {
 
@@ -24,11 +23,6 @@ public class WeatherEntity {
     @JsonProperty("pressure")
     private int pressure;
 
-    @JsonProperty("clouds")
-    private int clouds;
-
-    @JsonProperty("visibility")
-    private int visibility;
 
 
     @JsonProperty("temp")
@@ -61,23 +55,4 @@ public class WeatherEntity {
         this.pressure = pressure;
     }
 
-    @JsonProperty("clouds")
-    public int getClouds() {
-        return clouds;
-    }
-
-    @JsonProperty("clouds")
-    public void setClouds(int clouds) {
-        this.clouds = clouds;
-    }
-
-    @JsonProperty("visibility")
-    public int getVisibility() {
-        return visibility;
-    }
-
-    @JsonProperty("visibility")
-    public void setVisibility(int visibility) {
-        this.visibility = visibility;
-    }
 }

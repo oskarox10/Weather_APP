@@ -2,6 +2,7 @@ package com.example.demo;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +25,14 @@ public class WeatherController {
     }
 
     @GetMapping("/{city}")
-    public Optional<WeatherEntity> getWeather (@PathVariable("city") String city){
-        return weatherRepository.getWeather(city);
+    public ResponseEntity<WeatherEntity> getWeather (@PathVariable("city") String city){
+        Optional<WeatherEntity> weather = weatherRepository.getWeather(city);
+
+        if (weather.isPresent()) {
+            return ResponseEntity.ok(weather.get());
+        }
+        return ResponseEntity.notFound().build();
+
     }
 
 

@@ -4,6 +4,7 @@ package com.example.demo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,7 +14,10 @@ import java.util.*;
 public class WeatherRepository {
 
     private final String GeoCodingURL = "http://api.openweathermap.org/geo/1.0/direct?q=";
-    private final String WeatherURL = "https://api.openweathermap.org/data/3.0/onecall?lat=";
+    private final String WeatherURL = "https://api.openweathermap.org/data/2.5/weather?lat=";
+
+    @Value("${apiKey}")
+    private String apiKey;
 
 
     private ObjectMapper objectMapper;
@@ -26,14 +30,14 @@ public class WeatherRepository {
     }
 
 
-    private Map<String,Integer> findCoordinatesByCity(String City) {
-        Optional<JsonNode> jsonNode = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(GeoCodingURL + City + "&limit=5&appid=fc020e00e72e06c98a1095659064252b", JsonNode[].class))).findFirst();
+    private Map<String,Double> findCoordinatesByCity(String City) {
+        Optional<JsonNode> jsonNode = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(GeoCodingURL + City + "&limit=5&appid=" + apiKey, JsonNode[].class))).findFirst();
 
-        Map<String, Integer> result = new HashMap<>();
+        Map<String, Double> result = new HashMap<>();
 
         if (jsonNode.isPresent()){
-            int lat = jsonNode.get().get("lat").asInt();
-            int lon = jsonNode.get().get("lon").asInt();
+            double lat = jsonNode.get().get("lat").asDouble();
+            double lon = jsonNode.get().get("lon").asDouble();
             result.put("lat", lat);
             result.put("lon", lon);
 
@@ -46,11 +50,9 @@ public class WeatherRepository {
 
 
     public Optional<WeatherEntity> getWeather(String City){
-        Map<String, Integer> coordinates = findCoordinatesByCity(City);
-        int lat = coordinates.get("lat");
-        int lon = coordinates.get("lon");
+        Map<String, Double> coordinates = findCoordinatesByCity(City);
 
-        return Optional.ofNullable(restTemplate.getForObject(WeatherURL + lat + "&lon=" + lon +"&appid=fc020e00e72e06c98a1095659064252b", WeatherEntity.class));
+        return Optional.ofNullable(restTemplate.getForObject(WeatherURL + coordinates.get("lat") + "&lon=" + coordinates.get("lon")+"&appid=" + apiKey, WeatherEntity.class));
     }
 
 
